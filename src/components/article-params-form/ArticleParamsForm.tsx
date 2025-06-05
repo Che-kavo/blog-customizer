@@ -38,15 +38,26 @@ export const ArticleParamsForm = ({
 	const [formValues, setFormValues] = useState(articleState);
 
 	useEffect(() => {
+		const saved = localStorage.getItem('articleState');
+		if (saved) {
+			const parsed = JSON.parse(saved);
+			setFormValues(parsed);
+			setArticleState(parsed);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (!isOpen) return;
+
 		const handleClickOutside = (e: MouseEvent) => {
 			if (
-				isOpen &&
 				containerRef.current &&
 				!containerRef.current.contains(e.target as Node)
 			) {
 				onClose();
 			}
 		};
+
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
@@ -66,14 +77,12 @@ export const ArticleParamsForm = ({
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setArticleState(formValues);
-		localStorage.setItem('articleState', JSON.stringify(formValues));
 		onClose();
 	};
 
 	const handleReset = () => {
 		setFormValues(defaultArticleState);
 		setArticleState(defaultArticleState);
-		localStorage.setItem('articleState', JSON.stringify(defaultArticleState));
 	};
 
 	const getOptionByValue = (options: typeof fontFamilyOptions, value: string) =>
@@ -109,6 +118,7 @@ export const ArticleParamsForm = ({
 							placeholder='Выберите шрифт'
 						/>
 					</div>
+
 					<Spacing size={50} />
 
 					<div className={styles.section}>
@@ -125,6 +135,7 @@ export const ArticleParamsForm = ({
 							}
 						/>
 					</div>
+
 					<Spacing size={50} />
 
 					<div className={styles.section}>
@@ -139,8 +150,8 @@ export const ArticleParamsForm = ({
 							placeholder='Выберите цвет шрифта'
 						/>
 					</div>
-					<Spacing size={50} />
 
+					<Spacing size={50} />
 					<Separator />
 					<Spacing size={50} />
 
